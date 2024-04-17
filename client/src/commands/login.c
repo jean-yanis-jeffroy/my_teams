@@ -5,6 +5,7 @@
 ** login
 */
 
+#include "client.h"
 #include "commands.h"
 #include "events.h"
 #include "protocol.h"
@@ -15,6 +16,7 @@
 void cmd_login(char **args, void *data, p_packet_t *packet)
 {
     size_t nb_args = 0;
+    p_client_t *p_client = ((c_client_t *)data)->p_client;
 
     for (; args[nb_args]; nb_args++);
     if (nb_args != 2) {
@@ -23,13 +25,10 @@ void cmd_login(char **args, void *data, p_packet_t *packet)
         return;
     }
     fprintf(stdout, "Trying to log in with username: %s\n", args[1]);
-    p_client_send_packet((p_client_t *)data,
+    p_client_send_packet(
+        p_client,
         EVT_LOGIN,
         args[1],
         strlen(args[1])
-    );
-    while (
-        !p_client_listen((p_client_t *)data, packet)
-        && packet->type != EVT_LOGIN
     );
 }
